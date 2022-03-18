@@ -1,33 +1,20 @@
-//code needed for routing 
-import { response } from 'express';
-import {
-    ReasonPhrases, 
-    StatusCodes,
-    getReasonPhrase, 
-    getStatusCode, 
-} from 'http-status-codes'; 
 
-response
-        .status(getStatusCode('No Content'))
-        .send({
-            error: 'Quest was updated in the database'
-        });
-response
-        .status(getStatusCode('Bad Request'))
-        .send({
-            error: 'Route herold does not match the Quest\'s herold in database'
-        });
-response
-        .status(getStatusCode('Internal Server Error'))
-        .send({
-            error: 'Hero was not found for given ID'
-        });
-import { response } from "express"
-
-fetch('http://localhost:3000/heroes/:heroId/quests/:questId'),{
-    method: 'DELETE'
+//code to use XHTML request from https://www.geeksforgeeks.org/delete-request-using-xmlhttprequest-by-making-custom-http-library/
+function easyHTTP(){
+    this.http = new XMLHttpRequest();
 }
-{
-    "description": "Some description"
+easyHTTP.prototype.delete = function (url, callback){
+    this.http.open("DELETE", url, true);
 
-}
+    let self = this;
+    this.http.onload = function(){
+        if(self.http.status === 204) {
+            callback(null, "Quest was deleted in the database");
+        } else if(self.http.status === 404) {
+            callback(null, "Route herold does not match the Quest\'s herold in the database");
+        } else{
+            callback("Hero of Quest was not found for given IDs" + self.http.status);
+        }
+    };
+    this.http.send();
+}; 
